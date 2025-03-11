@@ -1,0 +1,24 @@
+# config-train.yml
+
+# Relative or just filenames
+train_file: "train.xyz"
+valid_file: "valid.xyz"
+test_file: "test.xyz"
+model_dir: "MACE_models"
+
+energy_key: "energy_per_atom"
+forces_key: "forces_xtb"
+device: cpu
+batch_size: 5
+max_num_epochs: 300
+swa: true
+seed: 123
+E0s: "average"
+
+foundation_model: "2024-01-07-mace-128-L2_epoch-199.model"
+
+name: "mace02_com1"
+model: "MACE"
+num_channels: 32
+max_L: 0
+r_max: 4.0
