@@ -64,7 +64,9 @@ model = trainer.model
 best_model = trainer.best_model  # Best model based on validation energy MAE
 
 # For validation set
-val_errors = trainer._validate(val_loader, is_test=True, test_result_save_path=base_path)
+val_save_path = os.path.join(base_path, "val_results")
+val_errors = trainer._validate(val_loader, is_test=True, test_result_save_path=val_save_path)
 
 # For test set (and save results)
-test_errors = trainer._validate(test_loader, is_test=True, test_result_save_path=base_path)
+test_save_path = os.path.join(base_path, "test_results")
+test_errors = trainer._validate(test_loader, is_test=True, test_result_save_path=test_save_path)
