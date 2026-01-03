@@ -1,0 +1,282 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>點餐系統</title>
+  <style>
+    :root { --border:#e5e7eb; --bg:#f9fafb; --text:#111827; --muted:#6b7280; }
+    body { font-family: system-ui, -apple-system, "Noto Sans TC", Arial, sans-serif; margin: 0; color: var(--text); background: var(--bg); }
+    .wrap { max-width: 980px; margin: 24px auto; padding: 0 16px; }
+    .card { background:#fff; border:1px solid var(--border); border-radius: 14px; padding: 16px; box-shadow: 0 1px 2px rgba(0,0,0,.04); }
+    h1 { font-size: 20px; margin: 0 0 12px; }
+    .grid { display:grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+    label { display:block; font-size: 12px; color: var(--muted); margin-bottom: 6px; }
+    input, select, textarea { width: 100%; padding: 10px 10px; border:1px solid var(--border); border-radius: 10px; font-size: 14px; box-sizing: border-box; }
+    textarea { min-height: 74px; resize: vertical; }
+    .row { display:flex; gap:10px; flex-wrap: wrap; align-items: center; }
+    button { border:1px solid var(--border); background:#111827; color:#fff; padding: 10px 12px; border-radius: 10px; cursor:pointer; font-size: 14px; }
+    button.secondary { background:#fff; color:#111827; }
+    button.danger { background:#b91c1c; }
+    .hint { font-size: 12px; color: var(--muted); margin-top: 8px; }
+    table { width:100%; border-collapse: collapse; margin-top: 12px; }
+    th, td { border-bottom:1px solid var(--border); padding: 10px 8px; text-align:left; font-size: 13px; vertical-align: top; }
+    th { font-size: 12px; color: var(--muted); font-weight: 600; }
+    .toolbar { display:flex; gap:8px; flex-wrap: wrap; justify-content: space-between; align-items: center; }
+    .toolbar .left, .toolbar .right { display:flex; gap:8px; flex-wrap: wrap; align-items:center; }
+    .pill { font-size:12px; color: var(--muted); }
+    .mono { font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; }
+    @media (max-width: 720px){ .grid { grid-template-columns: 1fr; } }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="card">
+      <h1>點餐系統</h1>
+
+      <form id="orderForm">
+        <div class="grid">
+          <div>
+            <label for="fullName">姓名（必填）</label>
+            <input id="fullName" name="fullName" placeholder="例如：王小明" required />
+          </div>
+          <div>
+            <label for="studentId">學號/編號（必填）</label>
+            <input id="studentId" name="studentId" placeholder="例如：N36134619 或 36134619" required />
+          </div>
+          <div>
+            <label for="item">餐點（必選）</label>
+            <select id="item" name="item" required>
+              <option value="" selected disabled>請選擇</option>
+              <option>雞腿便當</option>
+              <option>排骨便當</option>
+              <option>素食便當</option>
+              <option>牛肉麵</option>
+              <option>滷肉飯</option>
+              <option>其他（請在備註寫）</option>
+            </select>
+          </div>
+          <div>
+            <label for="qty">數量</label>
+            <input id="qty" name="qty" type="number" min="1" value="1" />
+          </div>
+          <div style="grid-column: 1 / -1;">
+            <label for="note">備註（口味/加辣/不要香菜等）</label>
+            <textarea id="note" name="note" placeholder="例如：少飯、加辣、不要蔥"></textarea>
+          </div>
+        </div>
+
+        <div class="row" style="margin-top:12px;">
+          <button type="submit">送出點餐</button>
+          <button type="button" class="secondary" id="resetBtn">清空表單</button>
+          <span class="pill">資料會儲存在此瀏覽器（localStorage）</span>
+        </div>
+      </form>
+    </div>
+
+    <div class="card" style="margin-top:16px;">
+      <div class="toolbar">
+        <div class="left">
+          <strong>點餐紀錄</strong>
+          <span class="pill" id="countPill">0 筆</span>
+        </div>
+        <div class="right">
+          <input id="search" placeholder="搜尋姓名/學號/餐點" style="max-width:260px;" />
+          <button type="button" class="secondary" id="exportBtn">匯出 CSV</button>
+          <button type="button" class="danger" id="clearBtn">清空全部</button>
+        </div>
+      </div>
+
+      <table id="table">
+        <thead>
+          <tr>
+            <th>時間</th>
+            <th>姓名</th>
+            <th>學號/編號</th>
+            <th>餐點</th>
+            <th>數量</th>
+            <th>備註</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody id="tbody"></tbody>
+      </table>
+
+      <div class="hint">
+        小提醒：若你要「多人用同一連結、資料集中在同一份清單」，需要後端或接 Google Sheet。
+      </div>
+    </div>
+  </div>
+
+<script>
+  const STORAGE_KEY = "order_records_v1";
+
+  /** @returns {Array} */
+  function loadRecords(){
+    try { return JSON.parse(localStorage.getItem(STORAGE_KEY) || "[]"); }
+    catch { return []; }
+  }
+
+  /** @param {Array} records */
+  function saveRecords(records){
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(records));
+  }
+
+  function nowISO(){
+    const d = new Date();
+    // 使用本地時間格式化（不依賴時區庫）
+    const pad = (n)=> String(n).padStart(2,"0");
+    const yyyy = d.getFullYear();
+    const mm = pad(d.getMonth()+1);
+    const dd = pad(d.getDate());
+    const hh = pad(d.getHours());
+    const mi = pad(d.getMinutes());
+    const ss = pad(d.getSeconds());
+    return `${yyyy}-${mm}-${dd} ${hh}:${mi}:${ss}`;
+  }
+
+  function normalizeStudentId(s){
+    // 依你的偏好：只抓數字部分，忽略大小寫前綴
+    const digits = (s || "").match(/\d+/g);
+    return digits ? digits.join("") : "";
+  }
+
+  function escapeHtml(str){
+    return String(str ?? "")
+      .replaceAll("&","&amp;")
+      .replaceAll("<","&lt;")
+      .replaceAll(">","&gt;")
+      .replaceAll('"',"&quot;")
+      .replaceAll("'","&#039;");
+  }
+
+  const form = document.getElementById("orderForm");
+  const resetBtn = document.getElementById("resetBtn");
+  const tbody = document.getElementById("tbody");
+  const countPill = document.getElementById("countPill");
+  const clearBtn = document.getElementById("clearBtn");
+  const exportBtn = document.getElementById("exportBtn");
+  const search = document.getElementById("search");
+
+  let records = loadRecords();
+
+  function render(){
+    const q = (search.value || "").trim().toLowerCase();
+    const filtered = q
+      ? records.filter(r =>
+          (r.fullName||"").toLowerCase().includes(q) ||
+          (r.studentIdRaw||"").toLowerCase().includes(q) ||
+          (r.studentIdNorm||"").toLowerCase().includes(q) ||
+          (r.item||"").toLowerCase().includes(q) ||
+          (r.note||"").toLowerCase().includes(q)
+        )
+      : records;
+
+    countPill.textContent = `${filtered.length} 筆`;
+
+    tbody.innerHTML = filtered.map(r => `
+      <tr>
+        <td class="mono">${escapeHtml(r.time)}</td>
+        <td>${escapeHtml(r.fullName)}</td>
+        <td>
+          <div>${escapeHtml(r.studentIdRaw)}</div>
+          <div class="pill mono">digits: ${escapeHtml(r.studentIdNorm)}</div>
+        </td>
+        <td>${escapeHtml(r.item)}</td>
+        <td class="mono">${escapeHtml(r.qty)}</td>
+        <td>${escapeHtml(r.note)}</td>
+        <td><button class="secondary" data-del="${escapeHtml(r.id)}">刪除</button></td>
+      </tr>
+    `).join("");
+
+    // 綁定刪除按鈕
+    tbody.querySelectorAll("button[data-del]").forEach(btn=>{
+      btn.addEventListener("click", ()=>{
+        const id = btn.getAttribute("data-del");
+        records = records.filter(r => r.id !== id);
+        saveRecords(records);
+        render();
+      });
+    });
+  }
+
+  form.addEventListener("submit", (e)=>{
+    e.preventDefault();
+
+    const fullName = document.getElementById("fullName").value.trim();
+    const studentIdRaw = document.getElementById("studentId").value.trim();
+    const item = document.getElementById("item").value;
+    const qty = Math.max(1, parseInt(document.getElementById("qty").value || "1", 10));
+    const note = document.getElementById("note").value.trim();
+
+    const studentIdNorm = normalizeStudentId(studentIdRaw);
+
+    if(!fullName || !studentIdRaw || !item){
+      alert("請填寫：姓名、學號/編號、餐點");
+      return;
+    }
+    if(!studentIdNorm){
+      alert("學號/編號看起來沒有數字，請再確認。");
+      return;
+    }
+
+    const record = {
+      id: crypto.randomUUID ? crypto.randomUUID() : String(Date.now()) + Math.random().toString(16).slice(2),
+      time: nowISO(),
+      fullName,
+      studentIdRaw,
+      studentIdNorm,
+      item,
+      qty,
+      note
+    };
+
+    // 若你想防止同一學號重複點，可改成：找到同學號就更新 qty
+    records.unshift(record);
+    saveRecords(records);
+
+    form.reset();
+    document.getElementById("qty").value = "1";
+    render();
+  });
+
+  resetBtn.addEventListener("click", ()=>{
+    form.reset();
+    document.getElementById("qty").value = "1";
+  });
+
+  clearBtn.addEventListener("click", ()=>{
+    if(confirm("確定要清空全部點餐紀錄？此動作無法復原。")){
+      records = [];
+      saveRecords(records);
+      render();
+    }
+  });
+
+  exportBtn.addEventListener("click", ()=>{
+    const headers = ["time","fullName","studentIdRaw","studentIdDigits","item","qty","note"];
+    const rows = records.map(r => [
+      r.time, r.fullName, r.studentIdRaw, r.studentIdNorm, r.item, String(r.qty), r.note
+    ]);
+
+    const csv = [headers, ...rows]
+      .map(arr => arr.map(v => `"${String(v ?? "").replaceAll('"','""')}"`).join(","))
+      .join("\n");
+
+    const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = "orders.csv";
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    URL.revokeObjectURL(url);
+  });
+
+  search.addEventListener("input", render);
+
+  render();
+</script>
+</body>
+</html>
