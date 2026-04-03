@@ -1,10 +1,11 @@
+#!/data00/software/python-envs/CHGNet-MD/bin/python
 from pymatgen.io.vasp import Poscar
 from pymatgen.io.lammps.data import LammpsData
 
-base_path = "/Users/emilydai/POSCAR_REV.vasp"
-output_path = "/Users/emilydai/Downloads/LCO_LLZO_medium.data"
+input_path = "/data01/tian_02/CALYPSO/LLZO_interface/LCO_LLZO/interface/test/POSCAR_REV.vasp"
+output_path = "LCO_LLZO_m.data"
 
-structure = Poscar.from_file(base_path).structure
+structure = Poscar.from_file(input_path).structure
 
 ld = LammpsData.from_structure(
     structure,
