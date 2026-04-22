@@ -1,4 +1,3 @@
-
 import os
 import random
 from ase.io import read, write
