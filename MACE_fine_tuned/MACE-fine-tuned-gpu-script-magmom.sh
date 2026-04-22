@@ -13,7 +13,7 @@ printf "start: $(date)\n" > record_date
 
 source /data01/tian_02/mace-mliap/bin/activate
 module load /data00/software/nvidia/hpc_sdk_253/modulefiles/nvhpc/25.3
-export LD_LIBRARY_PATH=/data01/tian_02/python312/lib:$CUDA_HOME/lib64:$HPCSDK/Linux_x86_64/25.3/math_libs/lib64:${LD_LIBRARY_PATH:-}
+export LD_LIBRARY_PATH=/data01/tian_02/python311/lib:$CUDA_HOME/lib64:$HPCSDK/Linux_x86_64/25.3/math_libs/lib64:${LD_LIBRARY_PATH:-}
 export TORCH_FORCE_NO_WEIGHTS_ONLY_LOAD=1
 
 base_path="BASEPATH"
@@ -30,7 +30,6 @@ TRAIN_SCRIPT=$MACE_CLI/run_train.py
 EVAL_SCRIPT=$MACE_CLI/eval_configs.py
 LAMMPS_SCRIPT=$MACE_CLI/create_lammps_model.py
 
-
 python "$TRAIN_SCRIPT" \
     --name="MACETest" \
     --model="MACE" \
@@ -39,13 +38,13 @@ python "$TRAIN_SCRIPT" \
     --test_file="$TEST" \
     --foundation_model="$MACE_MODEL" \
     --E0s="foundation" \
+    --loss="stress" \
     --energy_key="vasp_energy" \
     --forces_key="vasp_forces" \
     --stress_key="vasp_stress" \
-    --loss="stress" \
     --energy_weight=10 \
-    --forces_weight=300 \
-    --stress_weight=10 \
+    --forces_weight=200 \
+    --stress_weight=30 \
     --embedding_specs='{"vasp_magmoms": {"embed_type": "continuous", "per": "atom", "in_dim": 1, "emb_dim": 16}}' \
     --num_interactions=2 \
     --num_cutoff_basis=5 \
@@ -69,14 +68,16 @@ python $LAMMPS_SCRIPT ./MACETest_stagetwo.model --format=mliap
 
 python "$EVAL_SCRIPT" \
     --configs="$TEST" \
-    --model="./MACETest_stagetwo_compiled.model" \
+    --model="./MACETest_stagetwo.model" \
     --default_dtype="float64" \
+    --compute_stress \
     --output="./eval_test.xyz" >> "$SLURM_JOB_NAME"-out
 
 python "$EVAL_SCRIPT" \
     --configs="$TRAIN" \
-    --model="./MACETest_stagetwo_compiled.model" \
+    --model="./MACETest_stagetwo.model" \
     --default_dtype="float64" \
+    --compute_stress \
     --output="./eval_train.xyz" >> "$SLURM_JOB_NAME"-out
 
 deactivate
@@ -85,3 +86,4 @@ end_time=$(date +%s)
 duration=$((end_time - start_time))
 printf "end: $(date)\n" >> record_date
 printf "duration: $duration (s)\n" >> record_date
+
