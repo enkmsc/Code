@@ -1,4 +1,4 @@
-#!/data01/tian_02/mace-python311/bin/python
+
 import os
 import random
 from ase.io import read, write
