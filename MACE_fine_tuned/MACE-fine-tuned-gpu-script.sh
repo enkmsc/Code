@@ -45,7 +45,6 @@ python "$TRAIN_SCRIPT" \
     --energy_weight=10 \
     --forces_weight=200 \
     --stress_weight=30 \
-    --embedding_specs='{"vasp_magmoms": {"embed_type": "continuous", "per": "atom", "in_dim": 1, "emb_dim": 16}}' \
     --num_interactions=2 \
     --num_cutoff_basis=5 \
     --max_ell=3 \
