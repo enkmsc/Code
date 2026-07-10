@@ -8,7 +8,7 @@
 Modify `src/optics.F` to enable `nabla.dat` output
 
 ```make
-patch -p1 < optics.patch`
+patch -p1 < optics.patch
 ```
 
 Then add the following preprocessor flag to `makefile.include`:
