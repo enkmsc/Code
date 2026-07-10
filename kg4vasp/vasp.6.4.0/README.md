@@ -1,3 +1,4 @@
+# Some compile info
 
 Patch for vasp/src/optics.F
 **patch -p1 < optics.patch** for ASCII version 
