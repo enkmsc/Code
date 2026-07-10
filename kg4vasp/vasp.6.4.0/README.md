@@ -13,6 +13,7 @@ Then add the following preprocessor flag to `makefile.include`:
 CPP_OPTIONS += -DNABLA1
 ```
 > **Note:** Multi-MPI execution currently does not generate `nabla.dat` correctly with the present implementation.
+
 `mpirun -n 1 /where/is/bin/vasp_std > ***-out`
 
 ## Compile kg4vasp
