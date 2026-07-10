@@ -1,7 +1,7 @@
 # Some compile info
 
 Patch for vasp/src/optics.F
-**patch -p1 < optics.patch** for ASCII version\n
+**patch -p1 < optics.patch** for ASCII version/n
 And to modify makefile.include add tag **CPP_OPTIONS += -DNABLA1**
 
 For kg4vasp compile
