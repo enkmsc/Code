@@ -19,7 +19,7 @@ CPP_OPTIONS += -DNABLA1
 > **Note:** Multi-MPI execution currently does not generate `nabla.dat` correctly with the present implementation.
 
 ```make
-mpirun -n 1 /where/is/bin/vasp_std > ***-out`
+mpirun -n 1 /where/is/bin/vasp_std > ***-out
 ```
 
 ## Compile kg4vasp
