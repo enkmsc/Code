@@ -1,8 +1,3 @@
-## Requirements
-
-- VASP 6.4.0
-- ASCII `nabla.dat` output (`-DNABLA1`)
-
 ## Patch VASP 6.4.0 for ASCII version
 
 Modify `src/optics.F` to enable `nabla.dat` output
