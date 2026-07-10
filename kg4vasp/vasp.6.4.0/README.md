@@ -5,7 +5,7 @@
 
 ## Patch VASP 6.4.0 for ASCII version
 
-Modify `src/optics.F` to enable `nabla.dat` output (VASP 6.4.0)
+Modify `src/optics.F` to enable `nabla.dat` output
 
 Then add the following preprocessor flag to `makefile.include`:
 
