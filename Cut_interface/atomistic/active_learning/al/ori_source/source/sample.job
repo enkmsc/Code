@@ -1,0 +1,8 @@
+#!/usr/bin/env bash
+#SBATCH -n 24
+#SBATCH --nodes=1
+#SBATCH -J sample_xxxNAMExxx
+#SBATCH --output=MTP_sample.out
+#SBATCH --time=3:00:00
+
+mpiexec.hydra lmp_mpi_2023 -var r $RANDOM -in lammps_input

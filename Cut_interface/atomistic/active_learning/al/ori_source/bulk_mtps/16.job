@@ -1,0 +1,8 @@
+#!/usr/bin/env bash
+#SBATCH -n 24
+#SBATCH --nodes=1
+#SBATCH -J refit_xxxNAMExxx
+#SBATCH --output=MTP_fitting.out
+#SBATCH --time=8:00:00
+
+mpiexec.hydra mlp3 train init.mtp selectedcfgs.cfg --save_to=mlip.mtp --al_mode=nbh --no_mindist_update=True --energy_weight=1 --force_weight=0.001 --stress_weight=0 --weight_scaling=2 --weight_scaling_forces=1

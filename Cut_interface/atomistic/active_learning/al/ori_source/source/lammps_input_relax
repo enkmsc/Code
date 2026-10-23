@@ -1,0 +1,48 @@
+# 3D block simulation
+boundary    p p p
+units       metal
+atom_style  atomic
+
+# geometry
+read_data   cutdata.pos
+#replicate   10 10 10
+
+# mass
+mass    1  6.941000
+mass    2 30.973763
+mass    3 32.064999
+mass    4 79.904
+
+thermo_style custom step temp pe ke etotal vol press fnorm fmax
+thermo 0
+
+#set core atom fixed
+#variable cx equal (xhi-xlo)/2
+#variable cy equal (yhi-ylo)/2
+#variable cz equal (zhi-zlo)/2
+
+#region prtre sphere ${cx} ${cy} ${cz} 6
+#group prtgr region prtre
+#fix freeze prtgr setforce 0 0 0
+
+min_style cg
+
+# MTP potential
+#pair_style      mlip load_from=mlip.mtp extrapolation_control=false extrapolation_control:threshold_break=10 extrapolation_control:threshold_save=2 extrapolation_control:save_extrapolative_to=sampledcfgs
+#pair_coeff      * *
+
+# MTP relax
+#min_modify dmax 0.1
+#minimize 0 10 15 1000000
+
+#unfix freeze
+
+# replusive potential
+pair_style      harmonic/cut
+pair_coeff      * * 1 1.61
+
+# replusive relax
+min_modify dmax 0.002
+minimize 1.0e-7 1.0e-7 1000000 1000000
+
+write_data cutdata.out nocoeff nofix

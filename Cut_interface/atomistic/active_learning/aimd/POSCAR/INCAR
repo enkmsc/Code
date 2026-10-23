@@ -1,0 +1,37 @@
+! Accuracy
+EDIFF = 1.0E-3
+ENCUT = 500.0
+ISMEAR = 0
+SIGMA = 0.03
+LASPH = True
+PREC = Accurate
+LREAL = Auto
+
+! Cluster
+NCORE = 4
+KPAR = 2
+
+! Algorithm
+ALGO = Normal
+
+! Output
+LORBIT = 10
+LWAVE = False
+LCHARG = False
+
+! MD
+ISIF = 2
+IBRION = 0
+NSW = 100
+NELM = 100
+
+! GGA
+GGA = PE
+
+! MD
+ISYM = 0
+NWRITE = 1
+POTIM = 2.0
+TEBEG = 1500.0
+MDALGO = 2
+SMASS = 3

@@ -1,0 +1,8 @@
+#!/usr/bin/env bash
+#SBATCH -n 1
+#SBATCH --nodes=1
+#SBATCH -J filter_xxxNAMExxx
+#SBATCH --output=filter_dis.out
+#SBATCH --time=02:00:00
+
+mpiexec.hydra mlp3 mindist_filter xxxCWDxxx/temp/sampledcfgs_filtergrade.0 1.6 xxxCWDxxx/temp/sampledcfgs_filterall

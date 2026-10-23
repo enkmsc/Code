@@ -1,0 +1,8 @@
+#!/usr/bin/env bash
+#SBATCH -n 1
+#SBATCH --nodes=1
+#SBATCH -J select_xxxNAMExxx
+#SBATCH --output=MTP_select.out
+#SBATCH --time=4:00:00
+
+mpiexec.hydra mlp3 select_add mlip.mtp selectedcfgs.cfg xxxCWDxxx/bulk_mtps/allcfgs_bulk_1500k.cfg diff.cfg

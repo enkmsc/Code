@@ -1,0 +1,8 @@
+#!/usr/bin/env bash
+#SBATCH -n 1
+#SBATCH --nodes=1
+#SBATCH -J relax_xxxNAMExxx
+#SBATCH --output=MTP_relax.out
+#SBATCH --time=00:10:00
+
+mpiexec.hydra lmp_mpi_2023 -var r $RANDOM -in lammps_input_relax

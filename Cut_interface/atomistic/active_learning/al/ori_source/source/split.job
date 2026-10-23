@@ -1,0 +1,8 @@
+#!/usr/bin/env bash
+#SBATCH -n 1
+#SBATCH --nodes=1
+#SBATCH -J split_xxxNAMExxx
+#SBATCH --output=split.out
+#SBATCH --time=02:00:00
+
+mpiexec.hydra ./split.sh

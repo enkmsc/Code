@@ -1,0 +1,8 @@
+#!/usr/bin/env bash
+#SBATCH -n 1
+#SBATCH --nodes=1
+#SBATCH -J upgrade_xxxNAMExxx
+#SBATCH --output=upgrade.out
+#SBATCH --time=02:00:00
+
+mpiexec.hydra ./upgrade.sh

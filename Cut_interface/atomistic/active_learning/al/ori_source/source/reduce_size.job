@@ -1,0 +1,13 @@
+#!/usr/bin/env bash
+#SBATCH -n 1
+#SBATCH --nodes=1
+#SBATCH -J reduce_size_xxxNAMExxx
+#SBATCH --output=reduce_size.out
+#SBATCH --time=01:00:00
+
+for f in sampledcfgs.*; do
+	./reduce_size.sh $f reduced_$f 50
+	rm -f $f || true
+	cat reduced_$f >> sampledcfgs || true
+	rm -f reduced_$f || true
+done

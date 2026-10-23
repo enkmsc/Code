@@ -1,0 +1,8 @@
+#!/usr/bin/env bash
+#SBATCH -n 1
+#SBATCH --nodes=1
+#SBATCH -J filter_xxxNAMExxx
+#SBATCH --output=filter_grade.out
+#SBATCH --time=00:30:00
+
+mpiexec.hydra mlp3 sample mlip.mtp xxxCWDxxx/temp/sampledcfgs xxxCWDxxx/temp/sampledcfgs_filtergrade --threshold_save=1.4 --threshold_break=9e20

@@ -1,0 +1,32 @@
+This folder provides codes for automatic local active learning. 
+Polycrystalline Li6PS5Br with 50% anion disorder is used as an example. 
+
+
+System requirements:
+Bash, python, MLIP3, ASE, numpy, LAMMPS
+
+** POTCAR files need to be added by the user due to copy right protection. **
+
+
+Installation:
+None
+
+
+Run time:
+High-performance clusters are needed. Active learning up to level 18 requires about 1 week. 
+
+
+Expected output:
+Trained moment tensor potentials together with the training set. 
+
+
+Demo and instructions for use:
+
+1. Ab initio molecular dynamics simulations should be performed with VASP. 
+The input files for VASP are provided, and the codes to extract configurations are provided.
+
+2. Initial configurations from AIMD should be pasted to al/ori_source/bulk_mtps/6.cfg
+
+3. The atomistic model should be provided to data_source/data1.pos
+
+4. To start active learning, run ./run.sh. 

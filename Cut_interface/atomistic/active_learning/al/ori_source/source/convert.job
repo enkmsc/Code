@@ -1,0 +1,12 @@
+#!/usr/bin/env bash
+#SBATCH -n 1
+#SBATCH --nodes=1
+#SBATCH -J convert_xxxNAMExxx
+#SBATCH --output=convert.out
+#SBATCH --time=02:00:00
+
+for d in cal*; do
+cd $d
+mlp3 convert --input_format=outcar --append OUTCAR ../diff.cfg
+cd ..
+done
