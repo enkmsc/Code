@@ -1,7 +1,0 @@
-__pycache__/
-.pytest_cache/
-models/
-input/
-results/
-committee-*.out
-
