@@ -1,0 +1,43 @@
+# === NVT continuation from 300 K restart, now 1200 K for 10 ns ===
+units           metal
+atom_style      atomic
+boundary        p p p
+newton          on
+processors      1 1 10
+
+# === Restart from previous run ===
+read_data       LCO_LLZO.data
+include         PARM.FILE
+
+# === Neighbor settings ===
+neighbor        1.0 bin
+neigh_modify    every 1 delay 0 check yes
+
+# === Time and integration ===
+timestep        0.001                             # 1 fs
+fix             nvt all nvt temp 1500.0 1500.0 0.1  # Tdamp = 1 fs
+fix             m all momentum 1 linear 1 1 1
+
+dump            1 all custom 10 dumpNVT_1500K.lammpstrj id type x y z
+dump_modify     1 sort id
+
+
+# === Thermodynamic output (every 100 steps) ===
+thermo_style    custom step temp etotal ke pe press
+thermo          1
+
+
+# === Print selected quantities to file every 50 steps ===
+variable        n     equal step
+variable        Etot  equal etotal
+variable        KE    equal ke
+variable        PotE  equal pe
+variable        T     equal temp
+
+fix             out all print 1 "${n} ${Etot} ${KE} ${PotE} ${T}" title "#step TotE KE PotE T" screen no file outputNVT_1500K.dat
+
+# === Run 10 ns = 10,000,000 steps ===
+run             50000
+
+# === Save final restart ===
+write_restart   runNVT_1500K.rest

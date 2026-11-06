@@ -1,0 +1,52 @@
+# === NPT continuation from 300 K restart, now 1200 K for 10 ns ===
+units           metal
+atom_style      atomic
+boundary        p p p
+newton          on
+processors      1 1 12
+
+
+# === Restart from previous run ===
+read_data       LCO_LLZO.data
+include         PARM.FILE
+
+# === Neighbor settings ===
+neighbor        1.0 bin
+neigh_modify    every 1 delay 0 check yes
+
+# === Energy minimization (resolve bad contacts) ===
+minimize        1.0e-6 1.0e-8 1000 10000
+reset_timestep  0
+
+# === Time and integration ===
+timestep        0.001                             # 1 fs
+velocity        all create 1500.0 87287 dist gaussian
+fix             npt all npt temp 1500.0 1500.0 0.1 iso 1.0 1.0 1.0
+fix             m all momentum 1 linear 1 1 1
+
+dump            1 all custom 100 dumpNPT_1500K.lammpstrj id type x y z
+dump_modify     1 sort id
+
+restart         100 ./Dump/NPT_1500K.*
+
+
+# === Thermodynamic output (every 100 steps) ===
+thermo_style    custom step temp etotal ke pe press
+thermo          10
+
+
+# === Print selected quantities to file every 50 steps ===
+variable        n     equal step
+variable        Etot  equal etotal
+variable        KE    equal ke
+variable        PotE  equal pe
+variable        T     equal temp
+variable        P     equal press
+
+fix             out all print 10 "${n} ${Etot} ${KE} ${PotE} ${T} ${P}" title "#step TotE KE PotE T P" screen no file outputNPT_1500K.dat
+
+# === Run 10 ns = 10,000,000 steps ===
+run             50000
+
+# === Save final restart ===
+write_restart   runNPT_1500K.rest

@@ -1,0 +1,3 @@
+# === pair style and kspace ===
+pair_style      mliap unified MACETest_stagetwo.model-mliap_lammps.pt 0
+pair_coeff      * * Li La Zr Co O

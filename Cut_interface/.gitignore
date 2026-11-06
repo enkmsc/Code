@@ -1,0 +1,12 @@
+md_sample/**/Dump/
+**/Dump/
+**/checkpoints/
+**/slurm-*.out
+**/log.lammps
+**/record_date
+**/*.rest
+**/*.pt
+**/output*.dat
+**/train.xyz
+**/test.xyz
+**/valid.xyz
