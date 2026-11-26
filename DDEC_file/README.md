@@ -2,6 +2,8 @@
 
 本教學使用 VASP 單點計算所得的電子密度，透過 Chargemol 09_26_2017 進行 DDEC6 atomic charge analysis。
 
+**主要分析結果（DDEC charge data）：`DDEC6_even_tempered_net_atomic_charges.xyz`。此檔案包含每顆原子的 DDEC6 net atomic charge（單位：e）。**
+
 ## 1. VASP single-point calculation
 
 使用最佳化後的結構作為 POSCAR，單點計算可參考 Bader charge 的計算流程。在原本的 INCAR 中確認以下設定：
@@ -50,39 +52,7 @@ command -v Chargemol_09_26_2017_linux_serial
 
 若找不到執行檔，需先設定 PATH 或請管理員提供安裝位置。程式可由 [Chargemol 官方網站](https://sourceforge.net/projects/ddec/files/) 取得。
 
-建立 `job_control.txt`，以下為中性三維週期性系統、只計算 DDEC6 charges 的範例：
-
-```text
-<net charge>
-0.0
-</net charge>
-
-<periodicity along A, B, and C vectors>
-.true.
-.true.
-.true.
-</periodicity along A, B, and C vectors>
-
-<atomic densities directory complete path>
-/absolute/path/to/chargemol_09_26_2017/atomic_densities/
-</atomic densities directory complete path>
-
-<charge type>
-DDEC6
-</charge type>
-
-<compute BOs>
-.false.
-</compute BOs>
-```
-
-| Parameter | Description |
-| --- | --- |
-| net charge | 系統總電荷（單位 e），中性系統為 0.0。 |
-| periodicity | 分別指定 A、B、C 方向的週期性，依實際系統設定。 |
-| atomic densities directory complete path | 修改為伺服器上 atomic_densities 的絕對路徑，保留最後的 /。 |
-| charge type | 使用 DDEC6。 |
-| compute BOs | 是否計算 bond orders；需要時改為 .true.。 |
+本教學沿用實驗室既有的 Chargemol 環境設定，不另外建立 `job_control.txt`。若在其他環境執行，請確認 Chargemol 所需的控制設定已備妥。
 
 送出計算前，資料夾應包含：
 
@@ -92,7 +62,6 @@ DDEC/
 ├── AECCAR0
 ├── AECCAR2
 ├── POTCAR
-├── job_control.txt
 ├── ddec-potcar.sh
 └── DDEC-sbatch.sh
 ```
@@ -141,7 +110,7 @@ sbatch DDEC-sbatch.sh
 
 DDEC charge 為正代表相對於中性原子缺少電子，負值代表獲得電子。DDEC partial charge 不等同於 formal oxidation state。
 
-確認輸出原子數與結構一致，並檢查所有原子電荷的總和是否接近 job_control.txt 所設定的 net charge（允許數值及輸出精度誤差）。單憑 ddec_record_date 有結束時間並不能確認計算成功，仍需檢查 Chargemol 的 log 與結果檔。
+確認輸出原子數與結構一致，並檢查所有原子電荷的總和是否接近 系統總電荷（net charge）（允許數值及輸出精度誤差）。單憑 ddec_record_date 有結束時間並不能確認計算成功，仍需檢查 Chargemol 的 log 與結果檔。
 
 ## References
 
