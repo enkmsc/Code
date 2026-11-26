@@ -1,7 +1,3 @@
-# DDEC6 Charge Analysis (VASP + Chargemol)
-
-**主要分析結果（DDEC charge data）：`DDEC6_even_tempered_net_atomic_charges.xyz`。此檔案包含每顆原子的 DDEC6 net atomic charge（單位：e）。**
-
 ## 1. VASP single-point calculation
 使用最佳化後的結構作為 POSCAR，單點計算可參考 Bader charge 的計算流程。在原本的 INCAR 中確認以下設定：
 ```ini
@@ -35,3 +31,5 @@ sbatch DDEC-sbatch.sh
 1. 將原始 POTCAR 備份為 POTCAR_calculate。
 2. 執行 ddec-potcar.sh，轉換 POTCAR 格式。
 3. 執行 Chargemol_09_26_2017_linux_serial。
+4. `DDEC6_even_tempered_net_atomic_charges.xyz`。此檔案包含每顆原子的 DDEC6 net atomic charge（單位：e）。
+
